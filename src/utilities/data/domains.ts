@@ -6,7 +6,6 @@
  * Doc guard
  */
 import * as d3 from 'd3'
-import * as errors from '../errors'
 import { Range } from '../../interfaces'
 import { getDateTime } from './timepoints'
 
@@ -15,9 +14,10 @@ import { getDateTime } from './timepoints'
  */
 function predMax(pred): number {
   let max = pred.point
-  if (pred.high) {
-    max = Math.max(max, ...pred.high)
-  }
+  // this was modified to remove the conditional below
+  // if (pred.high) {
+  //   max = Math.max(max, ...pred.high)
+  // }
   return max
 }
 
@@ -31,19 +31,19 @@ export function y (data, dataConfig): Range {
   if (dataConfig.actual) {
     max = Math.max(max, ...data.actual.filter(d => d))
   }
-
-  if (dataConfig.observed) {
-    data.observed.forEach(d => {
-      max = Math.max(max, ...d.map(lagD => lagD.value))
-    })
-  }
-
-  if (dataConfig.history) {
-    data.history.forEach(h => {
-      max = Math.max(max, ...h.actual)
-    })
-  }
-
+  // this isn't included
+  // if (dataConfig.observed) {
+  //   data.observed.forEach(d => {
+  //     max = Math.max(max, ...d.map(lagD => lagD.value))
+  //   })
+  // }
+  // // this isn't included
+  // if (dataConfig.history) {
+  //   data.history.forEach(h => {
+  //     max = Math.max(max, ...h.actual)
+  //   })
+  // }
+  
   data.models.forEach(md => {
     md.predictions.forEach(p => {
       if (p) {
@@ -55,7 +55,29 @@ export function y (data, dataConfig): Range {
     })
   })
 
-  return [min, 1.1 * max]
+  return [min, 1.3 * max] // 1.3*max in new version
+}
+
+export function y_pred(actual, predictions, dataConfig): Range {
+  let min = 0;
+  let max = 0;
+
+  if (dataConfig.actual) {
+    max = Math.max(max, ...actual.filter(d => d.y).map(d => d.y));
+  }
+
+  predictions.filter(p => !p.hidden).forEach(md => {
+    md.displayedData.filter(v => v != false).forEach(p => {
+      if (p) {
+        max = Math.max(max, ...p);
+        if (dataConfig.predictions.peak) {
+          max = Math.max(max, predMax(p.peakValue));
+        }
+      }
+    });
+  });
+
+  return [min, 1.2 * max];
 }
 
 /**
@@ -69,7 +91,7 @@ export function x (data, dataConfig): Range {
  * Return domain for xdate
  */
 export function xDate (data, dataConfig): Range {
-  return d3.extent(data.timePoints.map(tp => {
+  return d3.extent(data.timePoints.map((tp, i) => {
     return getDateTime(tp, dataConfig.pointType)
   }))
 }

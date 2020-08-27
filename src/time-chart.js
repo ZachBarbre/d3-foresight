@@ -64,7 +64,7 @@ export default class TimeChart extends Chart {
     this.cid = this.config.confidenceIntervals.length - 1
 
     let panelConfig = {
-      ci: this.cid === -1 ? false : {
+      ci: this.cid === -1 ? false : { 
         idx: this.cid,
         values: this.config.confidenceIntervals
       },
@@ -115,13 +115,24 @@ export default class TimeChart extends Chart {
         }
       }
     })
-
+    // added in LEGEND_RESCALE OPTION - don't think we need this though
     ev.addSub(this.uuid, ev.LEGEND_CI, (msg, { idx }) => {
       this.predictions.forEach(p => {
         this.cid = p.cid = idx
         p.update(this.currentIdx)
       })
     })
+  }
+
+  updateDomains (predictions) {
+    if (this.config.axes.y.domain) {
+      this.yScale.domain(this.config.axes.y.domain);
+      } else {
+        this.yScale.domain(domains.y_pred(this.actual.data, predictions, this.dataConfig));
+      }
+      this.yAxis.plot(this.scales);
+      this.actual.rescale(this.scales);
+      this.predictions.forEach(p => p.update(this.currentIdx));
   }
 
   // plot data
@@ -131,7 +142,6 @@ export default class TimeChart extends Chart {
     this.dataConfig = getTimeChartDataConfig(data, this.config)
     this.dataVersionTimes = tpUtils.parseDataVersionTimes(data, this.dataConfig)
     this.ticks = this.dataConfig.ticks
-
     if (this.config.axes.y.domain) {
       this.yScale.domain(this.config.axes.y.domain)
     } else {
@@ -140,7 +150,15 @@ export default class TimeChart extends Chart {
     this.xScale.domain(domains.x(data, this.dataConfig))
     this.xScaleDate.domain(domains.xDate(data, this.dataConfig))
     this.xScalePoint.domain(domains.xPoint(data, this.dataConfig))
+    // plot has been extracted to a new function plotChart
+    this.plotChart(data)
+    // new plotChart ends here. doesn't do anything differnt 
+    // Hot start the chart
+    this.currentIdx = 0
+    this.update(this.currentIdx)
+  }
 
+  plotChart (data) {
     this.xAxis.plot(this.scales)
     this.yAxis.plot(this.scales)
 
@@ -224,12 +242,7 @@ export default class TimeChart extends Chart {
       this.actual, this.observed,
       ...this.predictions, ...this.additional
     ])
-
-    // Hot start the chart
-    this.currentIdx = 0
-    this.update(this.currentIdx)
   }
-
   /**
    * Update marker position
    */
@@ -239,8 +252,8 @@ export default class TimeChart extends Chart {
 
       // Use data versions to update the timerect
       this.timerect.update(this.dataVersionTimes[idx])
-
       this.predictions.forEach(p => { p.update(idx) })
+      this.updateDomains([...this.predictions, ...this.additional].filter(m => !m.hidden))
       this.overlay.update(this.predictions)
       if (this.dataConfig.observed) {
         this.observed.update(idx)
@@ -254,6 +267,18 @@ export default class TimeChart extends Chart {
       this.timezeroLine.update(idx)
     }
   }
+
+  // add updateYAxisTitle -> maybe needed after updateDomains is called? 
+  updateYAxisTitle (newAxixTitle) {
+    this.yAxis.changeTitle(newAxixTitle);
+    this.controlPanel.updateTitle(newAxisTitle)
+  }
+  /*
+    {
+    key: 'updateYAxisTitle',
+    value: function updateYAxisTitle(newAxisTitle) {
+      this.yAxis.changeTitle(newAxisTitle);
+   */
 
   /**
    * Move chart one step ahead

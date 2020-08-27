@@ -83,7 +83,7 @@ export default class LegendDrawer extends Component {
     if (config.ci) {
       let ciRow = middleContainer.append('div')
           .attr('class', 'row control-row')
-      ciRow.append('span').text('CI')
+      ciRow.append('span').text('Confidence Interval')
 
       let ciValues = [...config.ci.values, 'none']
       this.ciButtons = new ToggleButtons(ciValues)
@@ -117,8 +117,8 @@ export default class LegendDrawer extends Component {
     this.showHideButtons.addOnClick(({ idx }) => {
       this.showHideAllItems(idx === 0)
     })
+    // this.showHideButtons.set(1)
     showHideRow.append(() => this.showHideButtons.node)
-
     // Add search box
     this.searchBox = new SearchBox()
     middleContainer.append(() => this.searchBox.node)
@@ -202,6 +202,8 @@ export default class LegendDrawer extends Component {
         this.pinnedContainer.append(() => drawerRow.node)
         return drawerRow
       })
+    this.showHideAllItems(false)
+    this.showHideButtons.set(1)
   }
 
   update (predictions) {
