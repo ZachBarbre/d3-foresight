@@ -148,8 +148,12 @@ export class XAxisDate extends SComponent {
 
   plot (scales) {
     let xAxis = d3.axisBottom(scales.xScalePoint)
-        .tickValues(scales.xScalePoint.domain().filter((d, i) => !(i % 2)))
-
+        .tickValues(scales.xScalePoint
+          .domain()
+          .filter((d, i) => !(i % 2))
+          )
+        .tickFormat(d => d.split('-')[0]) // using the format mmwr-year display only mmwr
+          
     let xAxisReverseTick = d3.axisTop(scales.xScalePoint)
         .tickValues(scales.xScalePoint.domain().filter((d, i) => !(i % 2)))
 
@@ -158,8 +162,8 @@ export class XAxisDate extends SComponent {
         .tickFormat(d3.timeFormat('%b'))
 
     // Mobile view fix
-    if (this.width < 420) {
-      xAxisDate.ticks(2)
+    if (this.layout.width < 420) {
+      xAxisDate.ticks(4)
       xAxis.tickValues(scales.xScalePoint.domain().filter((d, i) => !(i % 10)))
     }
 
