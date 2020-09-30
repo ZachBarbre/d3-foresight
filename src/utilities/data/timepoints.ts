@@ -99,7 +99,11 @@ export function getDateTime(tp: Timepoint | Date | string, pointType: TimepointI
     if (pointType === 'week') {
       return d3.timeParse('%Y-%W')(`${tp.year}-${tp.week}`)
     } else if (pointType === 'mmwr-week') {
-      return (new mmwr.MMWRDate(tp.year, (tp as Timepoint).week)).toJSDate()
+      let newDate = (new mmwr.MMWRDate(tp.year, (tp as Timepoint).week)).toJSDate()
+      newDate.setDate(newDate.getDate() + 6)
+      // mmwr.MMWRDate function returns the start date of the MMWR week. 
+      // CDC requires the end of the MMWRWeek.
+      return newDate
     } else if (pointType === 'biweek') {
       return d3.timeParse('%Y-%W')(`${tp.year}-${tp.biweek * 2}`)
     } else if (pointType === 'month') {

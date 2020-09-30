@@ -133,7 +133,7 @@ export default class Overlay extends SComponent {
           // Add note regarding which prediction is getting displayed
           let aheadIndex = visibleModels[0].displayedIdx(index)
           if (aheadIndex !== null) {
-            ttTitle = `${aheadIndex + 1} ahead`
+            ttTitle = `${aheadIndex + 1} ${aheadIndex === 0 ? 'week' : 'weeks'} ahead`
           }
         }
 
