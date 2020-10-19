@@ -61,7 +61,7 @@ export default class TimeChart extends Chart {
     this.observed = this.append(new Observed())
     this.predictions = []
     this.additional = []
-    this.cid = this.config.confidenceIntervals.length - 1
+    this.cid = this.config.confidenceIntervals.length > 0 ? 0 : -1
     
     let panelConfig = {
       ci: this.cid === -1 ? false : { 
