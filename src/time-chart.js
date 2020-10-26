@@ -252,7 +252,7 @@ export default class TimeChart extends Chart {
       this.currentIdx = idx
 
       // Use data versions to update the timerect
-      this.timerect.update(this.dataVersionTimes[idx])
+      this.timerect.update(this.dataVersionTimes[idx], this.width)
       this.predictions.forEach(p => { p.update(idx) })
       this.updateDomains([...this.predictions, ...this.additional].filter(m => !m.hidden))
       this.overlay.update(this.predictions)
