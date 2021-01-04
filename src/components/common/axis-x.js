@@ -178,5 +178,9 @@ export class XAxisDate extends SComponent {
 
     this.selection.select('.axis-x-date')
       .transition().duration(200).call(xAxisDate)
+      .selectAll('text')
+      .filter((d, i) => i !== 0)
+      .attr('transform', 'rotate(-45)')
+      .attr('text-anchor', 'end')
   }
 }

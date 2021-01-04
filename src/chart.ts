@@ -41,7 +41,7 @@ export default class Chart {
       margin: {
         top: 5,
         right: 60,
-        bottom: 70,
+        bottom: 75,
         left: 55
       },
       onset: false
