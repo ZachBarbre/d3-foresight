@@ -24,7 +24,7 @@ export default class TimeRect extends SComponent {
     this.xScaleDate = scales.xScaleDate
   }
 
-  update (time) {
+  update (time, width) {
     if (time === null) {
       // We don't know the data version time
       this.hidden = true
@@ -34,11 +34,17 @@ export default class TimeRect extends SComponent {
         .transition()
         .duration(200)
         .attr('width', this.xScaleDate(time))
-
-      this.text
-        .transition()
-        .duration(200)
-        .attr('transform', `translate(${this.xScaleDate(time) + 15}, 10) rotate(-90)`)
+      if (width < 300) {
+        this.text
+          .transition()
+          .duration(200)
+          .attr('transform', `translate(${this.xScaleDate(time) }, 10) rotate(-90)`)
+      } else {
+        this.text
+          .transition()
+          .duration(200)
+          .attr('transform', `translate(${this.xScaleDate(time) + 15}, 10) rotate(-90)`)
+      }
     }
   }
 }

@@ -61,7 +61,7 @@ export default class TimeChart extends Chart {
     this.observed = this.append(new Observed())
     this.predictions = []
     this.additional = []
-    this.cid = this.config.confidenceIntervals.length - 1
+    this.cid = this.config.confidenceIntervals.length > 0 ? 0 : -1
     
     let panelConfig = {
       ci: this.cid === -1 ? false : { 
@@ -115,6 +115,7 @@ export default class TimeChart extends Chart {
           marker.hidden = !state
         }
       }
+      this.updateDomains([...this.predictions, ...this.additional].filter(m => !m.hidden))
     })
     // added in LEGEND_RESCALE OPTION - don't think we need this though
     ev.addSub(this.uuid, ev.LEGEND_CI, (msg, { idx }) => {
@@ -252,7 +253,7 @@ export default class TimeChart extends Chart {
       this.currentIdx = idx
 
       // Use data versions to update the timerect
-      this.timerect.update(this.dataVersionTimes[idx])
+      this.timerect.update(this.dataVersionTimes[idx], this.width)
       this.predictions.forEach(p => { p.update(idx) })
       this.updateDomains([...this.predictions, ...this.additional].filter(m => !m.hidden))
       this.overlay.update(this.predictions)

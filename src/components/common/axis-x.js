@@ -150,7 +150,7 @@ export class XAxisDate extends SComponent {
     let xAxis = d3.axisBottom(scales.xScalePoint)
         .tickValues(scales.xScalePoint
           .domain()
-          .filter((d, i) => !(i % 2))
+          .filter((d, i) => !(i % 4)) // changed from displaying ever other month with a % 2
           )
         .tickFormat(d => d.split('-')[0]) // using the format mmwr-year display only mmwr
           
@@ -159,7 +159,7 @@ export class XAxisDate extends SComponent {
 
     let xAxisDate = d3.axisBottom(scales.xScaleDate)
         .ticks(d3.timeMonth)
-        .tickFormat(d3.timeFormat('%b'))
+        .tickFormat(d3.timeFormat('%b-%y'))
 
     // Mobile view fix
     if (this.layout.width < 420) {
@@ -178,5 +178,9 @@ export class XAxisDate extends SComponent {
 
     this.selection.select('.axis-x-date')
       .transition().duration(200).call(xAxisDate)
+      .selectAll('text')
+      .filter((d, i) => i !== 0)
+      .attr('transform', 'rotate(-45)')
+      .attr('text-anchor', 'end')
   }
 }
