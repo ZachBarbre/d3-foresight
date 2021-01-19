@@ -115,6 +115,7 @@ export default class TimeChart extends Chart {
           marker.hidden = !state
         }
       }
+      this.updateDomains([...this.predictions, ...this.additional].filter(m => !m.hidden))
     })
     // added in LEGEND_RESCALE OPTION - don't think we need this though
     ev.addSub(this.uuid, ev.LEGEND_CI, (msg, { idx }) => {
